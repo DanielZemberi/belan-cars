@@ -16,7 +16,7 @@ export async function GET() {
   console.log("Opening page");
   await page.setUserAgent(new UserAgent().toString());
   console.log("Setting user agent");
-  let allCars = [];
+  let allCars: any[] = [];
 
   const startTime = new Date().getTime();
   while (currentPage <= totalPages) {
@@ -45,7 +45,7 @@ export async function GET() {
 
 }
 
- async function hydrateDetailPage(previewList) {
+ async function hydrateDetailPage(previewList:any) {
   console.log("Starting to hydrate detail pages");
 
   const cluster = await Cluster.launch({
@@ -64,7 +64,7 @@ export async function GET() {
       const title = $(".title").text();
       const subtitle = $(".subtitle").text();
       const previewImg = $("#photoPanel").find("img").attr("src");
-      const infoList = [];
+      const infoList: any[] = [];
 
       $(".modify-list .view-field").each((index, element) => {
         const title = $(element).find(".view-field-title").text();
@@ -72,10 +72,10 @@ export async function GET() {
         infoList.push({ title: title.trim(), value });
       });
 
-      const features = [];
+      const features: any[] = [];
       $(".features-container fieldset").each((index, element) => {
         const clusterName = $(element).find("legend").text();
-        const clusterValues = [];
+        const clusterValues:any[] = [];
         $(element)
           .find(".feature-item")
           .each((index, element) => {
@@ -86,16 +86,17 @@ export async function GET() {
 
       // TODO: fetch all images in detail
       const carDetail = { title, subtitle, previewImg, infoList, features };
-      data[carDetail] = carDetail;
+      data[carDetail as any] = carDetail;
       console.log(`Currently hydrating: ${title}`);
     } catch (error) {
-      console.error(`Error scraping ${data.title}: ${error.message}`);
+      const err  = error as any
+      console.error(`Error scraping ${data.title}: ${err?.message }`);
     } finally {
       await page.close();
     }
   });
 
-  previewList.forEach((item) => {
+  previewList.forEach((item: any) => {
     cluster.queue(item);
   });
 
@@ -103,7 +104,7 @@ export async function GET() {
   await cluster.close();
 }
 
- async function getPreviewData(page, url) {
+ async function getPreviewData(page: any, url: any) {
   await page.goto(url, { waitUntil: "domcontentloaded" });
   console.log("inside getPreviewData");
 
@@ -111,10 +112,11 @@ export async function GET() {
   const $ = cheerio.load(htmlContent);
 
   const carsListRaw = $(".js-announcement-list-item");
-  const carsListPretty = [];
-  const detailUrls = [];
+  const carsListPretty: any[] = [];
+  const detailUrls: any[] = [];
 
-  carsListRaw.each(async (index, element) => {
+  // carsListRaw.each(async (index, element) => {
+  carsListRaw.each( (index, element) => {
     const car = $(element);
     const thumbnailSrc = car.find(".thumb-inner img").attr("src");
     const thumbnailDataSrc = car.find(".thumb-inner img").attr("data-src");
