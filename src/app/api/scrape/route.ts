@@ -10,7 +10,8 @@ const totalPages = 2;
 
 export async function GET() {
   console.log("Starting script");
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({   args: ['--no-sandbox'],
+});
   console.log("Launching browser");
   const page = await browser.newPage();
   console.log("Opening page");
